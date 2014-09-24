@@ -9,23 +9,27 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <!-- Включаем MVC аннотации -->
     <mvc:annotation-driven/>
 
-    <!--
-    Использование MVC Resources
-    Проще говоря, все файлы из папки webapp/resources/ будут доступны по адресу: localhost/resources/
-    -->
     <mvc:resources mapping="/resources/**" location="/resources/"/>
 
-    <!-- Указываем Spring MVC где искать классы-контроллеры -->
-    <context:component-scan base-package="ru.habrahabr.sm">
+    <context:component-scan base-package="net.github.rtc.quiz">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
     </context:component-scan>
 
-    <!-- Указываем Spring MVC где будут лежать наши Viewшки, в данном случае это "/WEB-INF/pages/" -->
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/WEB-INF/pages/"/>
-        <property name="suffix" value=".jsp"/>
+
+    <!-- freemarker config -->
+    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="/WEB-INF/pages/"/>
+    </bean>
+
+    <!--
+      View resolvers can also be configured with ResourceBundles or XML files. If you need
+      different view resolving based on Locale, you have to use the resource bundle resolver.
+    -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="cache" value="true"/>
+        <property name="prefix" value=""/>
+        <property name="suffix" value=".ftl"/>
     </bean>
 </beans>

@@ -17,15 +17,10 @@
 
     <context:property-placeholder location="classpath:database.properties"/>
 
-    <mongo:mongo host="${mongo.host}" port="${mongo.port}"/>
-
-    <mongo:db-factory
-            username="${mongo.username}"
-            password="${mongo.password}"
-            dbname="${mongo.db}"
-            mongo-ref="mongo"/>
-
-    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
-        <constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
+    <bean id="mongo" class="com.mongodb.Mongo">
+        <constructor-arg name="host" value="${mongo.host}" />
+        <constructor-arg name="port" value="${mongo.port}" />
     </bean>
+
+
 </beans>

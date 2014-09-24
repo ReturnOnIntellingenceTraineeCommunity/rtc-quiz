@@ -62,12 +62,6 @@
             <version>2.11.4</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>${version.jackson}</version>
-        </dependency>
-
         <!-- Servlet Api -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -98,6 +92,13 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.5</version>
+        </dependency>
+
+        <!--Jongo-->
+        <dependency>
+            <groupId>org.jongo</groupId>
+            <artifactId>jongo</artifactId>
+            <version>1.1</version>
         </dependency>
     </dependencies>
 

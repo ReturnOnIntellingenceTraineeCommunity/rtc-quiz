@@ -25,6 +25,9 @@
         <module name="rtc-quiz" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="rtc-quiz" target="1.7" />
+    </bytecodeTargetLevel>
   </component>
 </project>
 

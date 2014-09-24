@@ -17,7 +17,7 @@ public class MainController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView showAll() {
         ModelAndView modelAndView = new ModelAndView("hello");
-        questionDAO.insert(new Question("Bla Bla Bla"));
+        modelAndView.addObject("questions", questionDAO.findAll());
         return modelAndView;
     }
 }

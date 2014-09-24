@@ -2,27 +2,25 @@ package net.github.rtc.quiz.model;
 
 import org.jongo.marshall.jackson.oid.ObjectId;
 
-import java.util.List;
-
-public class Question {
+public class Answer {
 
     @ObjectId
     private String _id;
 
     private String text;
 
-    private List<Answer> answers;
+    private boolean isRight;
 
+    public Answer() {
+    }
+
+    public Answer(final String text, final boolean isRight) {
+        this.text = text;
+        this.isRight = isRight;
+    }
 
     public String get_id() {
         return _id;
-    }
-
-    public Question(String text){
-        this.text = text;
-    }
-
-    public Question(){
     }
 
     public void set_id(final String _id) {
@@ -37,11 +35,11 @@ public class Question {
         this.text = text;
     }
 
-    public List<Answer> getAnswers() {
-        return answers;
+    public boolean isRight() {
+        return isRight;
     }
 
-    public void setAnswers(final List<Answer> answers) {
-        this.answers = answers;
+    public void setRight(final boolean isRight) {
+        this.isRight = isRight;
     }
 }

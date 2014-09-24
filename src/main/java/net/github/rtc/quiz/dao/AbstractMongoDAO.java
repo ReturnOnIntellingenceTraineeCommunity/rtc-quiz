@@ -12,11 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.jongo.marshall.jackson.JacksonMapper.Builder;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Created by Ivan Yatcuba on 9/24/14.
- */
-public abstract class AbstractMongoDAO<T> {
+public abstract class AbstractMongoDAO<T> implements GenericDAO<T> {
     @Autowired
     private Mongo mongo;
 
@@ -45,4 +44,29 @@ public abstract class AbstractMongoDAO<T> {
     }
 
     protected abstract Class<T> getEntityClass();
+
+    protected final List<T> convertIterable(Iterable<T> as) {
+        List<T> objects = new ArrayList<>();
+        for (T mp : as) {
+            objects.add(mp);
+        }
+        return objects;
+    }
+
+    public List<T> findAll(){
+        Iterable<T> as = this.collection.find().sort("{_id:1}").as(this.getEntityClass());
+        return this.convertIterable(as);
+    }
+
+    public void insert(T item){
+        this.collection.save(item);
+    }
+
+    public void update(T item){
+        this.collection.save(item);
+    }
+
+    public void delete(T item){
+        //this.collection.remove(item);
+    }
 }

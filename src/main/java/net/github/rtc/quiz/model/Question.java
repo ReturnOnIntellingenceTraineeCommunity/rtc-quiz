@@ -11,27 +11,26 @@ public class Question {
 
     private String text;
 
-    private QuestionType type;
+    private QuestionType type = QuestionType.JAVA;
 
-    private  Difficulty difficulty;
+    private  Difficulty difficulty = Difficulty.EASY;
 
     private List<Answer> answers;
 
-
-    public String get_id() {
-        return _id;
+    public Question(){
     }
-
     public Question(String text){
         this.text = text;
-    }
-
-    public Question(){
     }
 
     public void set_id(final String _id) {
         this._id = _id;
     }
+
+    public String get_id() {
+        return _id;
+    }
+
 
     public String getText() {
         return text;

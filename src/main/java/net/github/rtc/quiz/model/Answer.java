@@ -9,14 +9,14 @@ public class Answer {
 
     private String text;
 
-    private boolean isRight;
+    private boolean right;
 
     public Answer() {
     }
 
-    public Answer(final String text, final boolean isRight) {
+    public Answer(final String text, final boolean right) {
         this.text = text;
-        this.isRight = isRight;
+        this.right = right;
     }
 
     public String get_id() {
@@ -36,10 +36,10 @@ public class Answer {
     }
 
     public boolean isRight() {
-        return isRight;
+        return right;
     }
 
     public void setRight(final boolean isRight) {
-        this.isRight = isRight;
+        this.right = isRight;
     }
 }

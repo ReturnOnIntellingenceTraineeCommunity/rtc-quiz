@@ -11,6 +11,10 @@ public class Question {
 
     private String text;
 
+    private QuestionType type;
+
+    private  Difficulty difficulty;
+
     private List<Answer> answers;
 
 
@@ -43,5 +47,21 @@ public class Question {
 
     public void setAnswers(final List<Answer> answers) {
         this.answers = answers;
+    }
+
+    public QuestionType getType() {
+        return type;
+    }
+
+    public void setType(final QuestionType type) {
+        this.type = type;
+    }
+
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(final Difficulty difficulty) {
+        this.difficulty = difficulty;
     }
 }

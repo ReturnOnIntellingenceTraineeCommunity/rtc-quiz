@@ -4,8 +4,9 @@ import java.util.List;
 
 public interface GenericDAO<T> {
     List<T> findAll();
-    void insert(T item);
-    void update(T item);
-    void delete(T item);
+    void save(T item);
+    void update(String id, T item);
+    void delete(String id);
+    T getById(String id);
     long getCount();
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
+import org.bson.types.ObjectId;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.marshall.jackson.JacksonMapper;
@@ -58,19 +59,23 @@ public abstract class AbstractMongoDAO<T> implements GenericDAO<T> {
         return this.convertIterable(as);
     }
 
-    public void insert(T item){
+    public void save(T item){
         this.collection.save(item);
     }
 
-    public void update(T item){
-        this.collection.save(item);
+    public void update(String id, T item){
+        this.collection.update(new ObjectId()).with(item);
     }
 
-    public void delete(T item){
-        //this.collection.remove(item);
+    public void delete(String id){
+        this.collection.remove(new ObjectId(id));
     }
 
     public long getCount(){
         return this.collection.count();
+    }
+
+    public T getById(String id){
+        return this.collection.findOne(new ObjectId(id)).as(getEntityClass());
     }
 }

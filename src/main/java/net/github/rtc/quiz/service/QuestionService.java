@@ -9,7 +9,8 @@ public interface QuestionService {
     List<Question> findAll();
     void insert(Question question);
     void update(Question question);
-    void delete(Question question);
+    void delete(String id);
     String getRightAnswerText(String id);
     long getCount();
+    Question getById(String id);
 }

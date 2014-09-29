@@ -31,7 +31,7 @@ public class MainController {
 
     @RequestMapping(value = "/question/create", method = RequestMethod.GET)
     public ModelAndView create() {
-        ModelAndView modelAndView = new ModelAndView("formQuestion");
+        ModelAndView modelAndView = new ModelAndView("createQuestion");
         modelAndView.addObject("question", getQuestion());
         modelAndView.addObject("difficulties", getQuestionDifficulty());
         modelAndView.addObject("types", getQuestionTypes());
@@ -44,11 +44,17 @@ public class MainController {
         return "redirect: //";
     }
 
+    @RequestMapping(value = "/question/update", method = RequestMethod.POST)
+    public String updateQuestion(@ModelAttribute("question") Question question, @RequestParam String _id) {
+        question.set_id(_id);
+        questionService.insert(question);
+        return "redirect: //";
+    }
+
     @RequestMapping(value = "/question/edit/{id}", method = RequestMethod.GET)
     public ModelAndView editQuestion(@PathVariable String id) {
-        ModelAndView modelAndView = new ModelAndView("formQuestion");
-        // get question by id here
-        modelAndView.addObject("question", getQuestion());
+        ModelAndView modelAndView = new ModelAndView("updateQuestion");
+        modelAndView.addObject("question", questionService.getById(id));
         modelAndView.addObject("difficulties", getQuestionDifficulty());
         modelAndView.addObject("types", getQuestionTypes());
         return modelAndView;
@@ -56,7 +62,7 @@ public class MainController {
 
     @RequestMapping(value = "/question/delete/{id}", method = RequestMethod.GET)
     public String deleteQuestion(@PathVariable String id) {
-        // remove question by id here
+        questionService.delete(id);
         return "redirect: //";
     }
 

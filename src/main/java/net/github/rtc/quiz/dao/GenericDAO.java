@@ -7,4 +7,5 @@ public interface GenericDAO<T> {
     void insert(T item);
     void update(T item);
     void delete(T item);
+    long getCount();
 }

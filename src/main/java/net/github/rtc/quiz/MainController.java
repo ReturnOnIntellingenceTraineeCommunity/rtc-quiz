@@ -1,16 +1,13 @@
 package net.github.rtc.quiz;
 
-import net.github.rtc.quiz.dao.impl.QuestionDAO;
 import net.github.rtc.quiz.model.Answer;
 import net.github.rtc.quiz.model.Difficulty;
 import net.github.rtc.quiz.model.Question;
 import net.github.rtc.quiz.model.QuestionType;
+import net.github.rtc.quiz.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
@@ -23,12 +20,12 @@ public class MainController {
     private static final int ANSWERS_COUNT = 4;
 
     @Autowired
-    private QuestionDAO questionDAO;
+    private QuestionService questionService;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView showAll() {
         ModelAndView modelAndView = new ModelAndView("list");
-        modelAndView.addObject("questions", questionDAO.findAll());
+        modelAndView.addObject("questions", questionService.findAll());
         return modelAndView;
     }
 
@@ -42,9 +39,9 @@ public class MainController {
     }
 
     @RequestMapping(value = "/question/save", method = RequestMethod.POST)
-    public ModelAndView saveQuestion(@ModelAttribute("question") Question question) {
-        questionDAO.insert(question);
-        return showAll();
+    public String saveQuestion(@ModelAttribute("question") Question question) {
+        questionService.insert(question);
+        return "redirect: //";
     }
 
     @RequestMapping(value = "/question/edit/{id}", method = RequestMethod.GET)
@@ -58,9 +55,31 @@ public class MainController {
     }
 
     @RequestMapping(value = "/question/delete/{id}", method = RequestMethod.GET)
-    public ModelAndView deleteQuestion(@PathVariable String id) {
+    public String deleteQuestion(@PathVariable String id) {
         // remove question by id here
-        return showAll();
+        return "redirect: //";
+    }
+
+    @RequestMapping(value = "/question/answer", method = RequestMethod.GET)
+    public ModelAndView beginQuiz() {
+        ModelAndView modelAndView = new ModelAndView("quiz");
+        modelAndView.addObject("questions", questionService.findAll());
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/question/check", method = RequestMethod.POST)
+    public ModelAndView checkQuiz(@RequestParam List<String> answers) {
+        int rightQuestionCount = 0;
+        for(String answer : answers){
+            String[] idAndAnswer = answer.split("#");
+            if(questionService.getRightAnswerText(idAndAnswer[0]).equals(idAndAnswer[1])){
+                rightQuestionCount++;
+            }
+        }
+        ModelAndView modelAndView = new ModelAndView("quizResults");
+        modelAndView.addObject("right",rightQuestionCount);
+        modelAndView.addObject("total",questionService.getCount());
+        return modelAndView;
     }
 
     @ModelAttribute("question")

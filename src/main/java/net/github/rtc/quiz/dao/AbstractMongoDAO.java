@@ -69,4 +69,8 @@ public abstract class AbstractMongoDAO<T> implements GenericDAO<T> {
     public void delete(T item){
         //this.collection.remove(item);
     }
+
+    public long getCount(){
+        return this.collection.count();
+    }
 }

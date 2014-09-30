@@ -16,8 +16,8 @@
         <td>${q.text}</td>
         <td>${q.type}</td>
         <td>${q.difficulty}</td>
-        <td><a href="<@spring.url " /question/edit/"+q._id/>">EDIT</a>/
-            <a href="<@spring.url " /question/delete/"+q._id/>">REMOVE</a></td>
+        <td><a href="<@spring.url "/question/edit/"+q._id/>">EDIT</a>/
+            <a href="<@spring.url "/question/delete/"+q._id/>">REMOVE</a></td>
     </tr>
     </#list>
 </table>

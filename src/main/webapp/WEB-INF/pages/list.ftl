@@ -21,7 +21,7 @@
     </tr>
     </#list>
 </table>
-<a href="<@spring.url " /question/create"/>">Add new</a>
-<a href="<@spring.url " /question/answer"/>">Answer</a>
+<a href="<@spring.url "/question/create"/>">Add new</a>
+<a href="<@spring.url "/question/answer"/>">Answer</a>
 </body>
 </html>

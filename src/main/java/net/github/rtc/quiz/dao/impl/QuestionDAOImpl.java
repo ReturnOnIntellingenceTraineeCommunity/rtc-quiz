@@ -18,9 +18,10 @@ public class QuestionDAOImpl extends AbstractMongoDAO<Question> implements Quest
     }
 
     @Override
-    public String getRightAnswerText(final String id) {
-        List<Answer> result = this.collection.findOne(new ObjectId(id)).projection("{_id : 0," +
-          "answers:{$elemMatch:{right:true}}}").as(Question.class).getAnswers();
-        return result.get(0).getText();
+    public List<Answer> getRightAnswers(final String id) {
+        List<Answer> result = this.collection.aggregate("{$match:{_id : #, \"answers.right\": true}}", new ObjectId(id))
+          .and("{$unwind: '$answers'}").and("{$match:{\"answers.right\":true}}")
+          .and("{$project:{_id:0, right:\"$answers.right\", text:\"$answers.text\"}}").as(Answer.class);
+        return result;
     }
 }

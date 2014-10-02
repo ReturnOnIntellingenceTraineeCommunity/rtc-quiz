@@ -1,6 +1,7 @@
 package net.github.rtc.quiz.service.impl;
 
 import net.github.rtc.quiz.dao.QuestionDAO;
+import net.github.rtc.quiz.model.Answer;
 import net.github.rtc.quiz.model.Question;
 import net.github.rtc.quiz.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,8 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public String getRightAnswerText(final String id) {
-        return questionDAO.getRightAnswerText(id);
+    public List<Answer> getRightAnswers(final String id) {
+        return questionDAO.getRightAnswers(id);
     }
 
     @Override

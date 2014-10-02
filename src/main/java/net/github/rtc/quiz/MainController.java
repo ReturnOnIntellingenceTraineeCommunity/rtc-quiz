@@ -10,9 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class MainController {
@@ -39,9 +37,24 @@ public class MainController {
     }
 
     @RequestMapping(value = "/question/save", method = RequestMethod.POST)
-    public String saveQuestion(@ModelAttribute("question") Question question) {
-        questionService.insert(question);
-        return "redirect: //";
+    public ModelAndView saveQuestion(@ModelAttribute("question") Question question) {
+        boolean rightFound = false;
+        for(Answer answer: question.getAnswers()){
+            if(answer.isRight()){
+                rightFound = true;
+            }
+        }
+        if(rightFound){
+            questionService.insert(question);
+            return new ModelAndView("redirect: //");
+        }else {
+            ModelAndView modelAndView = new ModelAndView("createQuestion");
+            modelAndView.addObject("question", question);
+            modelAndView.addObject("difficulties", getQuestionDifficulty());
+            modelAndView.addObject("types", getQuestionTypes());
+            return modelAndView;
+        }
+
     }
 
     @RequestMapping(value = "/question/update", method = RequestMethod.POST)
@@ -74,18 +87,44 @@ public class MainController {
     }
 
     @RequestMapping(value = "/question/check", method = RequestMethod.POST)
-    public ModelAndView checkQuiz(@RequestParam List<String> answers) {
-        int rightQuestionCount = 0;
-        for(String answer : answers){
-            String[] idAndAnswer = answer.split("#");
-            if(questionService.getRightAnswerText(idAndAnswer[0]).equals(idAndAnswer[1])){
-                rightQuestionCount++;
+    public ModelAndView checkQuiz(@RequestParam(required = false) List<String> answers) {
+        if(answers != null) {
+
+            int rightQuestionCount = 0;
+            Map<String, List<String>> questionsAndAnswers = new HashMap<>();
+            for(String answer: answers){
+                String[] idAndAnswer = answer.split("#");
+                if(!questionsAndAnswers.containsKey(idAndAnswer[0])){
+                    questionsAndAnswers.put(idAndAnswer[0], new ArrayList<String>());
+                }
+                questionsAndAnswers.get(idAndAnswer[0]).add(idAndAnswer[1]);
             }
+
+            for(String questionId: questionsAndAnswers.keySet()){
+                List<Answer> rightAnswers =   questionService.getRightAnswers(questionId);
+                if(rightAnswers.size() == questionsAndAnswers.get(questionId).size()){
+                    boolean passed = true;
+                    for(Answer answer: rightAnswers){
+                        if(!questionsAndAnswers.get(questionId).contains(answer.getText())){
+                            passed = false;break;
+                        }
+                    }
+                    if(passed){
+                        rightQuestionCount++;
+                    }
+                }
+            }
+
+            ModelAndView modelAndView = new ModelAndView("quizResults");
+            modelAndView.addObject("right",rightQuestionCount);
+            modelAndView.addObject("total",questionService.getCount());
+            return modelAndView;
+        } else {
+            ModelAndView modelAndView = new ModelAndView("quiz");
+            modelAndView.addObject("questions", questionService.findAll());
+            return modelAndView;
         }
-        ModelAndView modelAndView = new ModelAndView("quizResults");
-        modelAndView.addObject("right",rightQuestionCount);
-        modelAndView.addObject("total",questionService.getCount());
-        return modelAndView;
+
     }
 
     @ModelAttribute("question")

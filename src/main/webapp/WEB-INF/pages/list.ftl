@@ -24,6 +24,8 @@
 </#escape>
 </table>
 <a href="<@spring.url "/question/create"/>">Add new</a>
-<a href="<@spring.url "/question/answer"/>">Answer</a>
+<#if questions?size != 0>
+    <a href="<@spring.url "/question/answer"/>">Answer</a>
+</#if>
 </body>
 </html>

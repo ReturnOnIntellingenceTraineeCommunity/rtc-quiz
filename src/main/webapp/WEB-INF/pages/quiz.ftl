@@ -3,7 +3,6 @@
 <head></head>
 <body>
 <form name="question" action="<@spring.url "/question/check"/>" method="post">
-    <#escape x as x?html>
     <#list questions as question>
     <h3>Question ${question_index+1}</h3>
     <p>${question.text}</p>
@@ -14,7 +13,6 @@
             <br/>
         </#list>
     </#list>
-    </#escape>
     <input type="submit" value="Answer" />
 </form>
 </body>

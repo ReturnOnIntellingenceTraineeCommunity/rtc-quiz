@@ -11,7 +11,6 @@
         <td>Difficulty</td>
         <td></td>
     </tr>
-<#escape x as x?html>
     <#list questions as q>
     <tr>
         <td>${q.text}</td>
@@ -21,7 +20,6 @@
             <a href="<@spring.url "/question/delete/"+q._id/>">REMOVE</a></td>
     </tr>
     </#list>
-</#escape>
 </table>
 <a href="<@spring.url "/question/create"/>">Add new</a>
 <#if questions?size != 0>

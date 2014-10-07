@@ -1,12 +1,14 @@
 package net.github.rtc.quiz.model;
 
-import org.jongo.marshall.jackson.oid.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+@Document
 public class Question {
 
-    @ObjectId
+    @Id
     private String _id;
 
     private String text;

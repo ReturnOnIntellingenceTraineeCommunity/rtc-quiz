@@ -48,8 +48,7 @@ public class HtmlTemplateLoader implements TemplateLoader {
     }
 
     @Override
-    public void closeTemplateSource(final Object templateSource) throws
-      IOException {
+    public void closeTemplateSource(final Object templateSource) throws IOException {
         delegate.closeTemplateSource(templateSource);
     }
 }

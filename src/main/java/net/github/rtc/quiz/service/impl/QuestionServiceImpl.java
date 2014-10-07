@@ -27,7 +27,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public void update(final Question question) {
-        questionDAO.update(question.get_id(), question);
+        questionDAO.save(question);
     }
 
     @Override
@@ -42,11 +42,11 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public long getCount() {
-        return questionDAO.getCount();
+        return questionDAO.count();
     }
 
     @Override
     public Question getById(final String id) {
-        return questionDAO.getById(id);
+        return questionDAO.findOne(id);
     }
 }

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+dos2unix /etc/init/rtc-quiz.conf
+start rtc-course-quiz

@@ -59,6 +59,7 @@
 	</properties>
 
 	<build>
+        <finalName>rtc-quiz</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

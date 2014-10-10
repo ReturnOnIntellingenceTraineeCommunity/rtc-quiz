@@ -5,6 +5,7 @@ import net.github.rtc.quiz.model.Difficulty;
 import net.github.rtc.quiz.model.Question;
 import net.github.rtc.quiz.model.QuestionType;
 import net.github.rtc.quiz.service.QuestionService;
+import net.github.rtc.quiz.util.TestChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +16,14 @@ import java.util.*;
 @Controller
 public class MainController {
 
+
     private static final int ANSWERS_COUNT = 4;
 
     @Autowired
     private QuestionService questionService;
+    @Autowired
+    private TestChecker testChecker;
+
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView showAll() {
@@ -45,7 +50,7 @@ public class MainController {
             }
         }
         if(rightFound){
-            questionService.insert(question);
+            questionService.save(question);
             return new ModelAndView("redirect: //");
         }else {
             ModelAndView modelAndView = new ModelAndView("createQuestion");
@@ -60,14 +65,14 @@ public class MainController {
     @RequestMapping(value = "/question/update", method = RequestMethod.POST)
     public String updateQuestion(@ModelAttribute("question") Question question, @RequestParam String _id) {
         question.set_id(_id);
-        questionService.insert(question);
+        questionService.save(question);
         return "redirect: //";
     }
 
     @RequestMapping(value = "/question/edit/{id}", method = RequestMethod.GET)
     public ModelAndView editQuestion(@PathVariable String id) {
         ModelAndView modelAndView = new ModelAndView("updateQuestion");
-        modelAndView.addObject("question", questionService.getById(id));
+        modelAndView.addObject("question", questionService.findById(id));
         modelAndView.addObject("difficulties", getQuestionDifficulty());
         modelAndView.addObject("types", getQuestionTypes());
         return modelAndView;
@@ -89,34 +94,8 @@ public class MainController {
     @RequestMapping(value = "/question/check", method = RequestMethod.POST)
     public ModelAndView checkQuiz(@RequestParam(required = false) List<String> answers) {
         if(answers != null) {
-
-            int rightQuestionCount = 0;
-            Map<String, List<String>> questionsAndAnswers = new HashMap<>();
-            for(String answer: answers){
-                String[] idAndAnswer = answer.split("#");
-                if(!questionsAndAnswers.containsKey(idAndAnswer[0])){
-                    questionsAndAnswers.put(idAndAnswer[0], new ArrayList<String>());
-                }
-                questionsAndAnswers.get(idAndAnswer[0]).add(idAndAnswer[1]);
-            }
-
-            for(String questionId: questionsAndAnswers.keySet()){
-                List<Answer> rightAnswers =   questionService.getRightAnswers(questionId);
-                if(rightAnswers.size() == questionsAndAnswers.get(questionId).size()){
-                    boolean passed = true;
-                    for(Answer answer: rightAnswers){
-                        if(!questionsAndAnswers.get(questionId).contains(answer.getText())){
-                            passed = false;break;
-                        }
-                    }
-                    if(passed){
-                        rightQuestionCount++;
-                    }
-                }
-            }
-
             ModelAndView modelAndView = new ModelAndView("quizResults");
-            modelAndView.addObject("right",rightQuestionCount);
+            modelAndView.addObject("right", testChecker.checkTest(answers));
             modelAndView.addObject("total",questionService.getCount());
             return modelAndView;
         } else {

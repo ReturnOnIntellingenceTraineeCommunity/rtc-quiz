@@ -10,11 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 
 @Configuration
-@ConditionalOnClass({ freemarker.template.Configuration.class,
-  FreeMarkerConfigurationFactory.class })
 @ComponentScan
 @EnableAutoConfiguration
-@EnableConfigurationProperties(FreeMarkerProperties.class)
 public class Application {
 
     public static void main(String[] args) {

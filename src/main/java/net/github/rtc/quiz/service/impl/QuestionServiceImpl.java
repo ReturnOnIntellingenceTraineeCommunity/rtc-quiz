@@ -5,6 +5,7 @@ import net.github.rtc.quiz.model.Answer;
 import net.github.rtc.quiz.model.Question;
 import net.github.rtc.quiz.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,8 @@ import java.util.List;
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
+    @Value("${app.version}")
+    private String version;
     @Autowired
     private QuestionDAO questionDAO;
 
@@ -27,6 +30,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     @Transactional
     public Question save(final Question question) {
+        question.setVersion(version);
         return questionDAO.save(question);
     }
 

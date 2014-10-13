@@ -19,6 +19,8 @@ public class Question {
 
     private List<Answer> answers;
 
+    private String version;
+
     public Question(){
     }
     public Question(String text){
@@ -66,5 +68,11 @@ public class Question {
         this.difficulty = difficulty;
     }
 
+    public String getVersion() {
+        return version;
+    }
 
+    public void setVersion(final String version) {
+        this.version = version;
+    }
 }

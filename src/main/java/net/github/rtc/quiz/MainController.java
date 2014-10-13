@@ -6,11 +6,14 @@ import net.github.rtc.quiz.model.Question;
 import net.github.rtc.quiz.model.QuestionType;
 import net.github.rtc.quiz.service.QuestionService;
 import net.github.rtc.quiz.util.TestChecker;
+import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.applet.AppletContext;
 import java.util.*;
 
 @Controller

@@ -35,10 +35,10 @@ public class QuestionController {
      * @param offset how many questions to skip
      */
     @RequestMapping(value = "/question", params = { "limit", "offset" }, method = RequestMethod.GET)
-    public Page<Question> findPaginateQuestion(@RequestParam("limit") int limit,
+    public @ResponseBody Page<Question> findPaginateQuestion(@RequestParam("limit") int limit,
       @RequestParam( "offset" ) int offset) {
         LOGGER.debug("Received request to get page of questions from {0} to {1}", offset, offset+limit);
-        return questionService.findPagenateQuestion(offset, limit);
+        return questionService.findQuestionPage(offset, limit);
     }
 
     /**
@@ -47,7 +47,7 @@ public class QuestionController {
      * @return created question
      */
     @RequestMapping(value = "/question", method = RequestMethod.POST)
-    public Question createQuestion(@RequestBody @Valid final Question question) {
+    public  @ResponseBody Question createQuestion(@RequestBody @Valid final Question question) {
         LOGGER.debug("Received request to create the {}", question);
         return questionService.save(question);
     }

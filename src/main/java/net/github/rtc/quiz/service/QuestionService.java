@@ -14,6 +14,6 @@ public interface QuestionService {
     List<Answer> findRightAnswers(String id);
     long getCount();
     Question findById(String id);
-    Page<Question> findPagenateQuestion(int offset, int limit);
+    Page<Question> findQuestionPage(int offset, int limit);
     void deleteAll();
 }

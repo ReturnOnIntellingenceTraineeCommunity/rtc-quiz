@@ -60,7 +60,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional
-    public Page<Question> findPagenateQuestion(int offset, int limit) {
+    public Page<Question> findQuestionPage(int offset, int limit) {
         if(offset > questionDAO.count() || limit <= 0){
             throw new IllegalArgumentException("Wrong limit or offset param");
         }
@@ -69,6 +69,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    @Transactional
     public void deleteAll() {
         questionDAO.deleteAll();
     }

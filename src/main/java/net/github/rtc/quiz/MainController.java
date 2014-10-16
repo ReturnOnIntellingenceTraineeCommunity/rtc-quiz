@@ -1,19 +1,16 @@
 package net.github.rtc.quiz;
 
 import net.github.rtc.quiz.model.Answer;
-import net.github.rtc.quiz.model.Difficulty;
+import net.github.rtc.quiz.model.Level;
 import net.github.rtc.quiz.model.Question;
 import net.github.rtc.quiz.model.QuestionType;
 import net.github.rtc.quiz.service.QuestionService;
 import net.github.rtc.quiz.util.TestChecker;
-import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.applet.AppletContext;
 import java.util.*;
 
 @Controller
@@ -126,7 +123,7 @@ public class MainController {
     }
 
     @ModelAttribute("difficulties")
-    public List<Difficulty> getQuestionDifficulty(){
-        return Arrays.asList(Difficulty.values());
+    public List<Level> getQuestionDifficulty(){
+        return Arrays.asList(Level.values());
     }
 }

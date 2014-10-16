@@ -15,7 +15,7 @@ public class Question {
 
     private QuestionType type = QuestionType.JAVA;
 
-    private  Difficulty difficulty = Difficulty.EASY;
+    private Level level = Level.EASY;
 
     private List<Answer> answers;
 
@@ -60,12 +60,12 @@ public class Question {
         this.type = type;
     }
 
-    public Difficulty getDifficulty() {
-        return difficulty;
+    public Level getLevel() {
+        return level;
     }
 
-    public void setDifficulty(final Difficulty difficulty) {
-        this.difficulty = difficulty;
+    public void setLevel(final Level difficulty) {
+        this.level = difficulty;
     }
 
     public String getVersion() {

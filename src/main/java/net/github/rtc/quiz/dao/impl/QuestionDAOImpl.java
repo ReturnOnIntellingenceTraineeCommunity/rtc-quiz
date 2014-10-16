@@ -21,7 +21,6 @@ public class QuestionDAOImpl implements QuestionDAOCustom {
 
     @Override
     public List<Answer> getRightAnswers(final String id) {
-
         Aggregation aggregation = newAggregation(
           match(Criteria.where("_id").is(new ObjectId(id)).andOperator(Criteria.where("answers.right").is(true))),
           unwind("answers"),

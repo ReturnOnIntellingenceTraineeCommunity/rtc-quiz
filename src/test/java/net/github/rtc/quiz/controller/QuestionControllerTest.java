@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.github.rtc.quiz.Application;
 import net.github.rtc.quiz.model.Answer;
-import net.github.rtc.quiz.model.Difficulty;
+import net.github.rtc.quiz.model.Level;
 import net.github.rtc.quiz.model.Question;
 import net.github.rtc.quiz.service.QuestionService;
 import org.junit.Before;
@@ -134,7 +134,7 @@ public class QuestionControllerTest {
         Question question = new Question();
         question.set_id(id);
         question.setText(text);
-        question.setDifficulty(Difficulty.EASY);
+        question.setLevel(Level.EASY);
         question.setAnswers(new ArrayList<Answer>());
         return question;
     }

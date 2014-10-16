@@ -1,4 +1,4 @@
-Difficulty:<@spring.formSingleSelect "question.difficulty" difficulties/> <br/>
+Difficulty:<@spring.formSingleSelect "question.level" difficulties/> <br/>
 Type: <@spring.formSingleSelect "question.type" types/><br/>
 Text: <@spring.formTextarea "question.text"/><br/>  <br/>
 Answers:<br/>

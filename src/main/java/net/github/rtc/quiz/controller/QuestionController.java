@@ -2,12 +2,17 @@ package net.github.rtc.quiz.controller;
 
 import net.github.rtc.quiz.model.Question;
 import net.github.rtc.quiz.service.QuestionService;
+import net.github.rtc.quiz.util.error.handler.ErrorInfo;
+import net.github.rtc.quiz.util.error.handler.ErrorResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -19,13 +24,16 @@ public class QuestionController {
     @Autowired
     private QuestionService questionService;
 
+
     /**
      * Retrieve all question from database
      * @return question collection
      */
     @RequestMapping(value = "/question", method = RequestMethod.GET)
-    public @ResponseBody List<Question> findAllQuestion() {
+    public @ResponseBody List<Question> findAllQuestion() throws Exception {
         LOGGER.debug("Received request to find all questions");
+        if(true)
+        throw  new NoSuchRequestHandlingMethodException("", this.getClass());
         return questionService.findAll();
     }
 
@@ -91,4 +99,6 @@ public class QuestionController {
         LOGGER.debug("Received request to delete question with id", id);
         questionService.delete(id);
     }
+
+
 }

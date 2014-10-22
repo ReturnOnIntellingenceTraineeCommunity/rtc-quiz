@@ -8,15 +8,24 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Converts exception definition map to exception - ErrorInfo instance map
+ */
 @Component
 public class ExceptionDefinitionsToErrorInfoConverter {
 
-    public Map<String, ErrorInfo> toRestErrors(Map<String, String> smap) {
-        if (CollectionUtils.isEmpty(smap)) {
+    /**
+     * Converts exception definition map to exception - ErrorInfo instance map
+     *
+     * @param exceptionMappings exception definition map to convert from
+     * @return exception - ErrorInfo instance map
+     */
+    public Map<String, ErrorInfo> toRestErrors(Map<String, String> exceptionMappings) {
+        if (CollectionUtils.isEmpty(exceptionMappings)) {
             return Collections.emptyMap();
         }
-        Map<String, ErrorInfo> map = new LinkedHashMap<>(smap.size());
-        for (Map.Entry<String, String> entry : smap.entrySet()) {
+        Map<String, ErrorInfo> map = new LinkedHashMap<>(exceptionMappings.size());
+        for (Map.Entry<String, String> entry : exceptionMappings.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             ErrorInfo template = toRestError(value);
@@ -25,10 +34,17 @@ public class ExceptionDefinitionsToErrorInfoConverter {
         return map;
     }
 
+    /**
+     * Converts ErrorInfo String definition to an ErrorInfo instance
+     *
+     * @param exceptionConfig ErrorInfo definition as a comma-delimited String
+     * @return ErrorInfo that corresponds to exceptionConfig
+     */
     private ErrorInfo toRestError(String exceptionConfig) {
         String[] values = StringUtils.commaDelimitedListToStringArray(exceptionConfig);
         if (values == null || values.length == 0) {
-            throw new IllegalStateException("Invalid config mapping. Exception names must map to a string configuration.");
+            throw new IllegalStateException(
+              "Invalid config mapping. Exception names must map to a string configuration.");
         }
         ErrorInfo.Builder builder = new ErrorInfo.Builder();
         boolean statusSet = false;
@@ -112,6 +128,7 @@ public class ExceptionDefinitionsToErrorInfoConverter {
         }
         return builder.build();
     }
+
     private static int getRequiredInt(String key, String value) {
         try {
             int anInt = Integer.valueOf(value);
@@ -122,6 +139,7 @@ public class ExceptionDefinitionsToErrorInfoConverter {
             throw new IllegalArgumentException(msg, e);
         }
     }
+
     private static int getInt(String key, String value) {
         try {
             return getRequiredInt(key, value);

@@ -13,39 +13,56 @@ import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMeth
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * A class to build default mappings for Spring-specific exceptions
+ */
 @Component
 public class ExceptionMappingDefinitionsFactory {
     public static final String DEFAULT_EXCEPTION_MESSAGE_VALUE = "_exmsg";
 
-    //ToDo add more exceptions
-    public final Map<String,String> createDefaultExceptionMappingDefinitions() {
-        Map<String,String> m = new LinkedHashMap<>();
+    /**
+     * Build default exception mappings
+     * @return  default exception mappings
+     */
+    public final Map<String, String> createDefaultExceptionMappingDefinitions() {
+        Map<String, String> exceptionMappingDefinitions = new LinkedHashMap<>();
         // 400
-        applyDef(m, HttpMessageNotReadableException.class, HttpStatus.BAD_REQUEST);
-        applyDef(m, MissingServletRequestParameterException.class, HttpStatus.BAD_REQUEST);
-        applyDef(m, TypeMismatchException.class, HttpStatus.BAD_REQUEST);
-        applyDef(m, "javax.validation.ValidationException", HttpStatus.BAD_REQUEST);
+        applyDef(exceptionMappingDefinitions, HttpMessageNotReadableException.class, HttpStatus.BAD_REQUEST);
+        applyDef(exceptionMappingDefinitions, MissingServletRequestParameterException.class, HttpStatus.BAD_REQUEST);
+        applyDef(exceptionMappingDefinitions, TypeMismatchException.class, HttpStatus.BAD_REQUEST);
+        applyDef(exceptionMappingDefinitions, "javax.validation.ValidationException", HttpStatus.BAD_REQUEST);
         // 404
-        applyDef(m, NoSuchRequestHandlingMethodException.class, HttpStatus.NOT_FOUND);
-        applyDef(m, "org.hibernate.ObjectNotFoundException", HttpStatus.NOT_FOUND);
+        applyDef(exceptionMappingDefinitions, NoSuchRequestHandlingMethodException.class, HttpStatus.NOT_FOUND);
+        applyDef(exceptionMappingDefinitions, NoSuchRequestHandlingMethodException.class, HttpStatus.NOT_FOUND);
+        applyDef(exceptionMappingDefinitions, "org.hibernate.ObjectNotFoundException", HttpStatus.NOT_FOUND);
         // 405
-        applyDef(m, HttpRequestMethodNotSupportedException.class, HttpStatus.METHOD_NOT_ALLOWED);
+        applyDef(exceptionMappingDefinitions, HttpRequestMethodNotSupportedException.class,
+          HttpStatus.METHOD_NOT_ALLOWED);
         // 406
-        applyDef(m, HttpMediaTypeNotAcceptableException.class, HttpStatus.NOT_ACCEPTABLE);
+        applyDef(exceptionMappingDefinitions, HttpMediaTypeNotAcceptableException.class, HttpStatus.NOT_ACCEPTABLE);
         // 409
         //can't use the class directly here as it may not be an available dependency:
-        applyDef(m, "org.springframework.dao.DataIntegrityViolationException", HttpStatus.CONFLICT);
+        applyDef(exceptionMappingDefinitions, "org.springframework.dao.DataIntegrityViolationException",
+          HttpStatus.CONFLICT);
         // 415
-        applyDef(m, HttpMediaTypeNotSupportedException.class, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
-        return m;
+        applyDef(exceptionMappingDefinitions, HttpMediaTypeNotSupportedException.class,
+          HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+
+        applyDef(exceptionMappingDefinitions, HttpMediaTypeNotSupportedException.class,
+          HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        //500
+        applyDef(exceptionMappingDefinitions, Throwable.class, HttpStatus.INTERNAL_SERVER_ERROR);
+        return exceptionMappingDefinitions;
     }
 
-    private void applyDef(Map<String,String> m, Class clazz, HttpStatus status) {
-        applyDef(m, clazz.getName(), status);
+    private void applyDef(Map<String, String> exceptionMappingDefinitions, Class clazz, HttpStatus status) {
+        applyDef(exceptionMappingDefinitions, clazz.getName(), status);
     }
-    private void applyDef(Map<String,String> m, String key, HttpStatus status) {
-        m.put(key, definitionFor(status));
+
+    private void applyDef(Map<String, String> exceptionMappingDefinitions, String key, HttpStatus status) {
+        exceptionMappingDefinitions.put(key, definitionFor(status));
     }
+
     private String definitionFor(HttpStatus status) {
         return status.value() + ", " + DEFAULT_EXCEPTION_MESSAGE_VALUE;
     }

@@ -2,12 +2,22 @@ package net.github.rtc.quiz.util.error.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -15,56 +25,32 @@ import java.util.Map;
  * to render a Rest error representation to the response body.
  */
 @Component
-public class ErrorResolver implements InitializingBean {
+public class ErrorResolver {
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorResolver.class);
+    private static final Map<Class<? extends Throwable>, HttpStatus> exceptionStatusMap;
 
-    /*A set of mapping definitions to resolve the exception to a ErrorInfo instance
+    static {
+        exceptionStatusMap = new HashMap<>();
+        //400
+        exceptionStatusMap.put(HttpMessageNotReadableException.class,  HttpStatus.BAD_REQUEST);
+        exceptionStatusMap.put(MissingServletRequestParameterException.class,  HttpStatus.BAD_REQUEST);
+        exceptionStatusMap.put(TypeMismatchException.class,  HttpStatus.BAD_REQUEST);
+        // 404
+        exceptionStatusMap.put(NoSuchRequestHandlingMethodException.class,  HttpStatus.NOT_FOUND);
+        // 405
+        exceptionStatusMap.put(HttpRequestMethodNotSupportedException.class,  HttpStatus.METHOD_NOT_ALLOWED);
+        // 406
+        exceptionStatusMap.put(HttpMediaTypeNotAcceptableException.class,   HttpStatus.NOT_ACCEPTABLE);
+        // 415
+        exceptionStatusMap.put(HttpMediaTypeNotSupportedException.class,   HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        //500
+        exceptionStatusMap.put(Throwable.class,  HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-    The entry key is any String that might appear in a fully qualified class name of an Exception
-    (or any of the Exception’s super classes).
-
-    The entry value is a ErrorInfo definition as a comma-delimited String. The string is parsed using heuristics to
-    determine how to build a ErrorInfo instance.*/
-    private Map<String, String> exceptionMappingDefinitions = Collections.emptyMap();
-
-    /*A set of pre built ErrorInfo templates to resolve the exception to a ErrorInfo instance
-
-    The entry key is any String that might appear in a fully qualified class name of an Exception
-    (or any of the Exception’s super classes).
-
-    The entry value is an ErrorInfo instance which is a config-time template for the specific ErrorInfo.*/
-    private Map<String, ErrorInfo> exceptionMappings = Collections.emptyMap();
-
-    @Autowired
-    private ExceptionMappingDefinitionsFactory exceptionMappingDefinitionsFactory;
-    @Autowired
-    private ExceptionDefinitionsToErrorInfoConverter exceptionDefinitionsToRestErrorConverter;
     @Autowired
     private ErrorInfoFactory errorInfoFactory;
 
     public ErrorResolver() {
-    }
-
-    public void setDefaultMoreInfoUrl(String defaultMoreInfoUrl) {
-        errorInfoFactory.setDefaultMoreInfoUrl(defaultMoreInfoUrl);
-    }
-
-    public void setDefaultEmptyCodeToStatus(boolean defaultEmptyCodeToStatus) {
-        errorInfoFactory.setDefaultEmptyCodeToStatus(defaultEmptyCodeToStatus);
-    }
-
-    public void setDefaultDeveloperMessage(String defaultDeveloperMessage) {
-        errorInfoFactory.setDefaultDeveloperMessage(defaultDeveloperMessage);
-    }
-
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        Map<String, String> definitions = exceptionMappingDefinitionsFactory.createDefaultExceptionMappingDefinitions();
-        if (this.exceptionMappingDefinitions != null && !this.exceptionMappingDefinitions.isEmpty()) {
-            definitions.putAll(this.exceptionMappingDefinitions);
-        }
-        this.exceptionMappings = exceptionDefinitionsToRestErrorConverter.toRestErrors(definitions);
     }
 
     /**
@@ -75,66 +61,43 @@ public class ErrorResolver implements InitializingBean {
      * processing
      */
     public ErrorInfo resolveError(Exception ex) {
-        ErrorInfo template = getRestErrorTemplate(ex);
-        if (template == null) {
-            return null;
-        }
-        return errorInfoFactory.buildErrorInfoFromTemplate(template, ex);
+        return getRestErrorTemplate(ex);
     }
 
     /**
-     * Returns the config-time 'template' ErrorInfo instance configured for the specified Exception, or
-     * {@code null} if a match was not found.
-     * <p/>
-     * The config-time template is used as the basis for the ErrorInfo constructed at runtime.
+     * Returns closest ErrorInfo for current exception
      *
-     * @param ex
-     * @return the template to use for the RestError instance to be constructed.
+     * @param ex handled exception
+     * @return closest ErrorInfo
      */
     private ErrorInfo getRestErrorTemplate(Exception ex) {
-        Map<String, ErrorInfo> mappings = this.exceptionMappings;
-        if (CollectionUtils.isEmpty(mappings)) {
-            return null;
-        }
-        ErrorInfo template = null;
-        String dominantMapping = null;
+        Map<Class<? extends Throwable>, HttpStatus> mappings = this.exceptionStatusMap;
+        Class dominantMapping = Throwable.class;
         int deepest = Integer.MAX_VALUE;
-        for (Map.Entry<String, ErrorInfo> entry : mappings.entrySet()) {
-            String key = entry.getKey();
-            int depth = getDepth(key, ex);
+        for (Map.Entry<Class<? extends Throwable>, HttpStatus> entry : mappings.entrySet()) {
+            int depth = getDepth(entry.getKey(), ex.getClass(), 0);
             if (depth >= 0 && depth < deepest) {
                 deepest = depth;
-                dominantMapping = key;
-                template = entry.getValue();
+                dominantMapping = entry.getKey();
             }
         }
-        if (template != null && LOGGER.isDebugEnabled()) {
-            LOGGER.debug(
-              "Resolving to RestError template '" + template + "' for exception of type [" + ex.getClass().getName()
-                + "], based on exception mapping [" + dominantMapping + "]");
-        }
-        return template;
+        return errorInfoFactory.buildErrorInfoFromTemplate(mappings.get(dominantMapping));
     }
 
     /**
      * Return the depth to the superclass matching.
-     * <p>0 means ex matches exactly. Returns -1 if there's no match.
+     * 0 means ex matches exactly. Returns -1 if there's no match.
      * Otherwise, returns depth. Lowest depth wins.
      */
-    protected int getDepth(String exceptionMapping, Exception ex) {
-        return getDepth(exceptionMapping, ex.getClass(), 0);
-    }
-
-    private int getDepth(String exceptionMapping, Class exceptionClass, int depth) {
-        if (exceptionClass.getName().contains(exceptionMapping)) {
-            // Found it!
+    protected int getDepth(Class<? extends Throwable> mappedExceptionClass,
+                            Class receivedExceptionClass, int depth) {
+        if (mappedExceptionClass.getName().equals(receivedExceptionClass.getClass().getName())) {
             return depth;
         }
-        // If we've gone as far as we can go and haven't found it...
-        if (exceptionClass.equals(Throwable.class)) {
+        if (receivedExceptionClass.equals(Throwable.class)) {
             return -1;
         }
-        return getDepth(exceptionMapping, exceptionClass.getSuperclass(), depth + 1);
+        return getDepth(mappedExceptionClass, receivedExceptionClass.getSuperclass(), depth + 1);
     }
 
 }
